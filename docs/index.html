@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floristme.id - Money Bouquet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        .product-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            color: #4a5568;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bouquet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .bouquet-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .bouquet-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #f7fafc, #edf2f7);
+            border: 2px dashed #cbd5e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a0aec0;
+            font-size: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        .bouquet-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .bouquet-card:hover .bouquet-image {
+            transform: scale(1.05);
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            background: #f7fafc;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+        }
+
+        .upload-input {
+            display: none;
+        }
+
+        .upload-text {
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .login-form {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            min-width: 350px;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .login-title {
+            color: #2d3748;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-cancel {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .login-cancel:hover {
+            background: #cbd5e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-error {
+            color: #e53e3e;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            padding: 8px;
+            background: #fed7d7;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .admin-status {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: rgba(72, 187, 120, 0.9);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .logout-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .bouquet-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .bouquet-card:hover::before {
+            left: 100%;
+        }
+
+        .bouquet-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .bouquet-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .sheets-count {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .price {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .denomination-section {
+            margin-top: 30px;
+        }
+
+        .denomination-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .denomination-item {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .denomination-item:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .denomination-item.selected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .denomination-amount {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .quantity-input {
+            margin-top: 15px;
+        }
+
+        .quantity-input label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .quantity-input input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .quantity-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .addons-section {
+            margin-top: 30px;
+        }
+
+        .addon-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .addon-item label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .addon-item input[type="checkbox"] {
+            transform: scale(1.2);
+        }
+
+        .checkout-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-summary {
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+
+        .summary-item.total {
+            border-top: 2px solid #e2e8f0;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .checkout-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .terms-section {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .terms-title {
+            color: #2d3748;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .terms-list {
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .terms-list li {
+            margin-bottom: 5px;
+        }
+
+        .floating-whatsapp {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #25d366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-whatsapp:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.6);
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .success-message {
+            color: #38a169;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <button class="admin-toggle" onclick="showLoginModal()">
+        <i class="fas fa-lock"></i> Admin Login
+    </button>
+
+    <div class="admin-status" id="adminStatus">
+        <i class="fas fa-user-shield"></i> Admin Mode Active
+        <button class="logout-btn" onclick="logoutAdmin()">Logout</button>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="loginModal" style="display: none;">
+        <div class="login-form">
+            <div class="login-title">
+                <i class="fas fa-shield-alt"></i>
+                Admin Login
+            </div>
+            <input type="text" id="username" class="login-input" placeholder="Username" autocomplete="username">
+            <input type="password" id="password" class="login-input" placeholder="Password" autocomplete="current-password">
+            <button class="login-btn" onclick="attemptLogin()">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <button class="login-btn login-cancel" onclick="hideLoginModal()">
+                <i class="fas fa-times"></i> Batal
+            </button>
+            <div class="login-error" id="loginError">
+                <i class="fas fa-exclamation-triangle"></i>
+                Username atau password salah!
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-seedling"></i> Floristme.id</h1>
+            <p>Money Bouquet - Hadiah Spesial untuk Orang Terkasih</p>
+        </div>
+
+        <div class="admin-panel" id="adminPanel" style="display: none;">
+            <h2 class="section-title">
+                <i class="fas fa-upload"></i>
+                Upload Foto Bouquet
+            </h2>
+            
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <input type="file" id="fileInput" class="upload-input" accept="image/*" multiple>
+                <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; margin-bottom: 10px; color: #667eea;"></i>
+                <div class="upload-text">
+                    <strong>Klik untuk upload foto</strong> atau drag & drop<br>
+                    <small>Format: JPG, PNG, WEBP (Maks 5MB per file)</small>
+                </div>
+            </div>
+            
+            <div class="image-preview" id="imagePreview"></div>
+            
+            <div style="margin-top: 20px;">
+                <label for="bouquetSelect" style="display: block; margin-bottom: 10px; font-weight: 600;">
+                    Pilih paket bouquet untuk foto ini:
+                </label>
+                <select id="bouquetSelect" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px;">
+                    <option value="">-- Pilih Paket --</option>
+                </select>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                <button onclick="assignImageToBouquet()" style="background: linear-gradient(135deg, #48bb78, #38a169); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                    <i class="fas fa-check"></i> Simpan Foto
+                </button>
+                
+                <button onclick="exportToGitHub()" style="background: linear-gradient(135deg, #333, #24292e); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                    <i class="fab fa-github"></i> Export ke GitHub
+                </button>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; font-size: 0.9rem;">
+                <strong><i class="fas fa-info-circle"></i> Cara Upload ke GitHub:</strong>
+                <ol style="margin-top: 10px; padding-left: 20px;">
+                    <li>Klik "Export ke GitHub" setelah upload foto</li>
+                    <li>Copy link yang muncul</li>
+                    <li>Buka GitHub repository Anda</li>
+                    <li>Upload foto ke folder <code>/images/</code></li>
+                    <li>Copy URL foto dan paste ke input URL di bawah</li>
+                </ol>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">
+                    Atau masukkan URL foto dari GitHub:
+                </label>
+                <input type="url" id="imageUrl" placeholder="https://raw.githubusercontent.com/username/repo/main/images/bouquet-20.jpg" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px;">
+                <button onclick="useImageUrl()" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                    <i class="fas fa-link"></i> Gunakan URL
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="product-section">
+                <h2 class="section-title">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Pilih Money Bouquet
+                </h2>
+                
+                <div class="bouquet-grid" id="bouquetGrid">
+                    <!-- Bouquet cards will be generated by JavaScript -->
+                </div>
+
+                <div class="denomination-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-coins"></i>
+                        Pilih Pecahan Uang
+                    </h3>
+                    <div class="denomination-grid" id="denominationGrid">
+                        <!-- Denomination options will be generated by JavaScript -->
+                    </div>
+                    <div class="quantity-input">
+                        <label for="quantity">Jumlah Lembar:</label>
+                        <input type="number" id="quantity" min="1" placeholder="Masukkan jumlah lembar">
+                        <div id="quantityError" class="error-message" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <div class="addons-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-plus-circle"></i>
+                        Add-ons
+                    </h3>
+                    <div id="addonsGrid">
+                        <!-- Add-ons will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkout-section">
+                <h2 class="section-title">
+                    <i class="fas fa-shopping-cart"></i>
+                    Ringkasan Pesanan
+                </h2>
+                
+                <div class="order-summary" id="orderSummary">
+                    <div class="summary-item">
+                        <span>Belum ada pesanan</span>
+                        <span>-</span>
+                    </div>
+                </div>
+
+                <button class="checkout-btn" id="checkoutBtn" disabled>
+                    <i class="fab fa-whatsapp"></i>
+                    Pesan via WhatsApp
+                </button>
+
+                <div class="terms-section">
+                    <div class="terms-title">
+                        <i class="fas fa-info-circle"></i>
+                        Syarat & Ketentuan
+                    </div>
+                    <ul class="terms-list">
+                        <li>Pemesanan minimal H-3 atau H-2</li>
+                        <li>Pembayaran via transfer Mandiri a.n Dini Amalia Ramdani</li>
+                        <li>Harga belum termasuk ongkir</li>
+                        <li>Pick up: Weekday 08.00-17.00, Weekend 09.00-16.00</li>
+                        <li>Bisa mix pecahan uang</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-whatsapp" onclick="openWhatsApp()">
+        <i class="fab fa-whatsapp"></i>
+    </div>
+
+    <script>
+        // Data produk berdasarkan PDF dengan placeholder untuk foto
+        const bouquetPrices = {
+            5: { price: 50000, image: null },
+            10: { price: 70000, image: null },
+            15: { price: 90000, image: null },
+            20: { price: 100000, image: null },
+            25: { price: 115000, image: null },
+            30: { price: 135000, image: null },
+            35: { price: 155000, image: null },
+            40: { price: 175000, image: null },
+            45: { price: 190000, image: null },
+            50: { price: 210000, image: null },
+            '51-60': { price: 250000, image: null },
+            '61-70': { price: 300000, image: null },
+            '71-80': { price: 350000, image: null },
+            '81-90': { price: 380000, image: null },
+            100: { price: 400000, image: null }
+        };
+
+        const denominations = [
+            { value: 1000, label: 'Rp 1.000' },
+            { value: 2000, label: 'Rp 2.000' },
+            { value: 5000, label: 'Rp 5.000' },
+            { value: 10000, label: 'Rp 10.000' },
+            { value: 20000, label: 'Rp 20.000' },
+            { value: 50000, label: 'Rp 50.000' },
+            { value: 100000, label: 'Rp 100.000' }
+        ];
+
+        const addons = [
+            { id: 'foreign_exchange', name: 'Penukaran Mata Uang Asing', price: 20000 },
+            { id: 'artificial_flowers', name: 'Bunga Artificial (5 tangkai)', price: 25000 },
+            { id: 'graduation_doll', name: 'Boneka Wisuda', price: 20000 },
+            { id: 'bear_doll', name: 'Boneka Beruang Polos', price: 15000 },
+            { id: 'box_m', name: 'Packing Kardus Ukuran M', price: 10000 },
+            { id: 'box_l', name: 'Packing Kardus Ukuran L', price: 15000 }
+        ];
+
+        let selectedBouquet = null;
+        let selectedDenomination = null;
+        let quantity = 0;
+        let selectedAddons = [];
+        let uploadedImages = [];
+        let isAdminMode = false;
+        let isLoggedIn = false;
+
+        // Admin credentials (ganti sesuai keinginan Anda)
+        const adminCredentials = {
+            username: 'floristadmin',
+            password: 'florist123'
+        };
+
+        // Initialize page
+        function init() {
+            generateBouquetCards();
+            generateDenominationOptions();
+            generateAddons();
+            setupEventListeners();
+            populateBouquetSelect();
+            loadStoredImages();
+            loadFromLocalStorage();
+        }
+
+        function showLoginModal() {
+            if (isLoggedIn) {
+                toggleAdmin();
+                return;
+            }
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('username').focus();
+        }
+
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function attemptLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+
+            if (username === adminCredentials.username && password === adminCredentials.password) {
+                isLoggedIn = true;
+                hideLoginModal();
+                toggleAdmin();
+                showAdminStatus();
+                
+                // Auto logout after 30 minutes for security
+                setTimeout(() => {
+                    if (isLoggedIn) {
+                        logoutAdmin();
+                        alert('Session berakhir. Silakan login kembali.');
+                    }
+                }, 30 * 60 * 1000);
+            } else {
+                errorDiv.style.display = 'block';
+                // Clear password field
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+                
+                // Hide error after 3 seconds
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        function logoutAdmin() {
+            isLoggedIn = false;
+            isAdminMode = false;
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('adminStatus').style.display = 'none';
+            
+            // Update button text
+            const toggleBtn = document.querySelector('.admin-toggle');
+            toggleBtn.innerHTML = '<i class="fas fa-lock"></i> Admin Login';
+        }
+
+        function showAdminStatus() {
+            document.getElementById('adminStatus').style.display = 'block';
+            
+            // Update button text
+            const toggleBtn = document.querySelector('.admin-toggle');
+            toggleBtn.innerHTML = '<i class="fas fa-cog"></i> Admin Panel';
+        }
+
+        function toggleAdmin() {
+            if (!isLoggedIn) {
+                showLoginModal();
+                return;
+            }
+            
+            isAdminMode = !isAdminMode;
+            const panel = document.getElementById('adminPanel');
+            panel.style.display = isAdminMode ? 'block' : 'none';
+        }
+
+        function populateBouquetSelect() {
+            const select = document.getElementById('bouquetSelect');
+            Object.keys(bouquetPrices).forEach(sheets => {
+                const option = document.createElement('option');
+                option.value = sheets;
+                option.textContent = `${sheets} lembar - Rp ${bouquetPrices[sheets].price.toLocaleString('id-ID')}`;
+                select.appendChild(option);
+            });
+        }
+
+        function loadStoredImages() {
+            // Try to load images from memory if any were previously uploaded
+            Object.keys(bouquetPrices).forEach(sheets => {
+                if (bouquetPrices[sheets].image) {
+                    updateBouquetCard(sheets);
+                }
+            });
+        }
+
+        function generateBouquetCards() {
+            const grid = document.getElementById('bouquetGrid');
+            grid.innerHTML = '';
+
+            Object.entries(bouquetPrices).forEach(([sheets, data]) => {
+                const card = document.createElement('div');
+                card.className = 'bouquet-card';
+                card.setAttribute('data-sheets', sheets);
+                
+                const imageContent = data.image ? 
+                    `<img src="${data.image}" alt="Bouquet ${sheets} lembar">` :
+                    '<i class="fas fa-image"></i>';
+                
+                card.innerHTML = `
+                    <div class="bouquet-image" id="image-${sheets}">
+                        ${imageContent}
+                    </div>
+                    <div class="card-header">
+                        <div class="sheets-count">${sheets} Lembar</div>
+                        <div class="price">Rp ${data.price.toLocaleString('id-ID')}</div>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => selectBouquet(sheets, data.price, card));
+                grid.appendChild(card);
+            });
+        }
+
+        function updateBouquetCard(sheets) {
+            const imageContainer = document.getElementById(`image-${sheets}`);
+            if (imageContainer && bouquetPrices[sheets].image) {
+                imageContainer.innerHTML = `<img src="${bouquetPrices[sheets].image}" alt="Bouquet ${sheets} lembar">`;
+            }
+        }
+
+        function generateDenominationOptions() {
+            const grid = document.getElementById('denominationGrid');
+            grid.innerHTML = '';
+
+            denominations.forEach(denom => {
+                const item = document.createElement('div');
+                item.className = 'denomination-item';
+                item.setAttribute('data-value', denom.value);
+                
+                item.innerHTML = `
+                    <div class="denomination-amount">${denom.label}</div>
+                `;
+
+                item.addEventListener('click', () => selectDenomination(denom, item));
+                grid.appendChild(item);
+            });
+        }
+
+        function generateAddons() {
+            const grid = document.getElementById('addonsGrid');
+            grid.innerHTML = '';
+
+            addons.forEach(addon => {
+                const item = document.createElement('div');
+                item.className = 'addon-item';
+                
+                item.innerHTML = `
+                    <label>
+                        <input type="checkbox" data-addon="${addon.id}">
+                        <span>${addon.name}</span>
+                    </label>
+                    <span>Rp ${addon.price.toLocaleString('id-ID')}</span>
+                `;
+
+                grid.appendChild(item);
+            });
+        }
+
+        function selectBouquet(sheets, price, card) {
+            // Remove previous selection
+            document.querySelectorAll('.bouquet-card').forEach(c => c.classList.remove('selected'));
+            
+            // Add selection to clicked card
+            card.classList.add('selected');
+            
+            selectedBouquet = { sheets, price };
+            updateOrderSummary();
+        }
+
+        function selectDenomination(denom, item) {
+            // Remove previous selection
+            document.querySelectorAll('.denomination-item').forEach(i => i.classList.remove('selected'));
+            
+            // Add selection to clicked item
+            item.classList.add('selected');
+            
+            selectedDenomination = denom;
+            updateOrderSummary();
+        }
+
+        function setupEventListeners() {
+            // Quantity input
+            document.getElementById('quantity').addEventListener('input', (e) => {
+                quantity = parseInt(e.target.value) || 0;
+                validateQuantity();
+                updateOrderSummary();
+            });
+
+            // Addons checkboxes
+            document.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox' && e.target.hasAttribute('data-addon')) {
+                    const addonId = e.target.getAttribute('data-addon');
+                    const addon = addons.find(a => a.id === addonId);
+                    
+                    if (e.target.checked) {
+                        selectedAddons.push(addon);
+                    } else {
+                        selectedAddons = selectedAddons.filter(a => a.id !== addonId);
+                    }
+                    
+                    updateOrderSummary();
+                }
+            });
+
+            // File upload
+            document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+            
+            // Drag and drop
+            const uploadArea = document.querySelector('.upload-area');
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                handleFiles(files);
+            });
+
+            // Login form enter key support
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && document.getElementById('loginModal').style.display === 'flex') {
+                    attemptLogin();
+                }
+            });
+
+            // Close modal on outside click
+            document.getElementById('loginModal').addEventListener('click', (e) => {
+                if (e.target.id === 'loginModal') {
+                    hideLoginModal();
+                }
+            });
+        }
+
+        function handleFileSelect(e) {
+            handleFiles(e.target.files);
+        }
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        uploadedImages.push({
+                            id: Date.now() + Math.random(),
+                            src: e.target.result,
+                            name: file.name
+                        });
+                        displayImagePreviews();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function displayImagePreviews() {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            
+            uploadedImages.forEach(img => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+                item.innerHTML = `
+                    <img src="${img.src}" alt="${img.name}">
+                    <button class="remove-btn" onclick="removeImage('${img.id}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                preview.appendChild(item);
+            });
+        }
+
+        function removeImage(imageId) {
+            uploadedImages = uploadedImages.filter(img => img.id != imageId);
+            displayImagePreviews();
+        }
+
+        function assignImageToBouquet() {
+            const selectedSheets = document.getElementById('bouquetSelect').value;
+            if (!selectedSheets || uploadedImages.length === 0) {
+                alert('Pilih paket bouquet dan upload foto terlebih dahulu!');
+                return;
+            }
+
+            // Use the first uploaded image for the selected bouquet
+            const image = uploadedImages[0];
+            bouquetPrices[selectedSheets].image = image.src;
+            
+            // Update the bouquet card
+            updateBouquetCard(selectedSheets);
+            
+            // Save to localStorage for persistence
+            saveToLocalStorage();
+            
+            // Clear uploaded images and reset form
+            uploadedImages = [];
+            displayImagePreviews();
+            document.getElementById('bouquetSelect').value = '';
+            document.getElementById('fileInput').value = '';
+            
+            alert(`Foto berhasil ditambahkan ke paket ${selectedSheets} lembar!`);
+        }
+
+        function exportToGitHub() {
+            if (uploadedImages.length === 0) {
+                alert('Upload foto terlebih dahulu!');
+                return;
+            }
+
+            const image = uploadedImages[0];
+            const filename = `bouquet-${Date.now()}.jpg`;
+            
+            // Create a temporary download link
+            const link = document.createElement('a');
+            link.href = image.src;
+            link.download = filename;
+            link.click();
+            
+            // Show GitHub instructions
+            const instructions = `
+LANGKAH UPLOAD KE GITHUB:
+
+1. Foto "${filename}" sudah didownload
+2. Buka repository GitHub Anda
+3. Buat folder "images" jika belum ada
+4. Upload file foto ke folder /images/
+5. Copy URL raw file (contoh):
+   https://raw.githubusercontent.com/username/repo/main/images/${filename}
+6. Paste URL tersebut ke input "URL foto" di bawah
+7. Klik "Gunakan URL"
+
+Atau bisa juga menggunakan layanan hosting gambar gratis seperti:
+- ImgBB.com
+- Imgur.com  
+- PostImg.cc
+            `;
+            
+            alert(instructions);
+        }
+
+        function useImageUrl() {
+            const imageUrl = document.getElementById('imageUrl').value.trim();
+            const selectedSheets = document.getElementById('bouquetSelect').value;
+            
+            if (!imageUrl) {
+                alert('Masukkan URL foto terlebih dahulu!');
+                return;
+            }
+            
+            if (!selectedSheets) {
+                alert('Pilih paket bouquet terlebih dahulu!');
+                return;
+            }
+
+            // Validate if URL is an image
+            if (!imageUrl.match(/\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i)) {
+                alert('URL harus mengarah ke file gambar (.jpg, .png, .gif, .webp)');
+                return;
+            }
+
+            // Test if image loads
+            const img = new Image();
+            img.onload = function() {
+                // Image loaded successfully
+                bouquetPrices[selectedSheets].image = imageUrl;
+                updateBouquetCard(selectedSheets);
+                saveToLocalStorage();
+                
+                // Reset form
+                document.getElementById('imageUrl').value = '';
+                document.getElementById('bouquetSelect').value = '';
+                
+                alert(`Foto dari URL berhasil ditambahkan ke paket ${selectedSheets} lembar!`);
+            };
+            
+            img.onerror = function() {
+                alert('URL foto tidak valid atau tidak dapat diakses. Pastikan URL benar dan foto dapat diakses publik.');
+            };
+            
+            img.src = imageUrl;
+        }
+
+        function saveToLocalStorage() {
+            try {
+                // Note: In Claude.ai artifacts, localStorage is not supported
+                // This is a placeholder for when the code is used elsewhere
+                const imageData = {};
+                Object.keys(bouquetPrices).forEach(sheets => {
+                    if (bouquetPrices[sheets].image) {
+                        imageData[sheets] = bouquetPrices[sheets].image;
+                    }
+                });
+                // localStorage.setItem('bouquetImages', JSON.stringify(imageData));
+            } catch (error) {
+                console.log('LocalStorage not available in this environment');
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                // const saved = localStorage.getItem('bouquetImages');
+                // if (saved) {
+                //     const imageData = JSON.parse(saved);
+                //     Object.keys(imageData).forEach(sheets => {
+                //         bouquetPrices[sheets].image = imageData[sheets];
+                //     });
+                // }
+            } catch (error) {
+                console.log('LocalStorage not available in this environment');
+            }
+        }
+
+        function validateQuantity() {
+            const errorDiv = document.getElementById('quantityError');
+            const input = document.getElementById('quantity');
+            
+            if (selectedBouquet && quantity > 0) {
+                const maxSheets = typeof selectedBouquet.sheets === 'string' ? 
+                    parseInt(selectedBouquet.sheets.split('-')[1]) : selectedBouquet.sheets;
+                    
+                if (quantity > maxSheets) {
+                    errorDiv.textContent = `Maksimal ${maxSheets} lembar untuk paket ini`;
+                    errorDiv.style.display = 'block';
+                    input.style.borderColor = '#e53e3e';
+                    return false;
+                }
+            }
+            
+            errorDiv.style.display = 'none';
+            input.style.borderColor = '#e2e8f0';
+            return true;
+        }
+
+        function updateOrderSummary() {
+            const summary = document.getElementById('orderSummary');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            let total = 0;
+            let summaryHTML = '';
+
+            // Bouquet price
+            if (selectedBouquet) {
+                summaryHTML += `
+                    <div class="summary-item">
+                        <span>Bouquet ${selectedBouquet.sheets} lembar</span>
+                        <span>Rp ${selectedBouquet.price.toLocaleString('id-ID')}</span>
+                    </div>
+                `;
+                total += selectedBouquet.price;
+            }
+
+            // Money amount
+            if (selectedDenomination && quantity > 0) {
+                const moneyAmount = selectedDenomination.value * quantity;
+                summaryHTML += `
+                    <div class="summary-item">
+                        <span>Uang (${quantity} × ${selectedDenomination.label})</span>
+                        <span>Rp ${moneyAmount.toLocaleString('id-ID')}</span>
+                    </div>
+                `;
+                total += moneyAmount;
+            }
+
+            // Add-ons
+            selectedAddons.forEach(addon => {
+                summaryHTML += `
+                    <div class="summary-item">
+                        <span>${addon.name}</span>
+                        <span>Rp ${addon.price.toLocaleString('id-ID')}</span>
+                    </div>
+                `;
+                total += addon.price;
+            });
+
+            // Total
+            if (total > 0) {
+                summaryHTML += `
+                    <div class="summary-item total">
+                        <span>Total</span>
+                        <span>Rp ${total.toLocaleString('id-ID')}</span>
+                    </div>
+                `;
+                
+                checkoutBtn.disabled = false;
+            } else {
+                summaryHTML = `
+                    <div class="summary-item">
+                        <span>Belum ada pesanan</span>
+                        <span>-</span>
+                    </div>
+                `;
+                
+                checkoutBtn.disabled = true;
+            }
+
+            summary.innerHTML = summaryHTML;
+        }
+
+        function generateWhatsAppMessage() {
+            if (!selectedBouquet || !selectedDenomination || quantity <= 0) {
+                return '';
+            }
+
+            let message = `*PEMESANAN MONEY BOUQUET*\n\n`;
+            message += `📦 *Detail Pesanan:*\n`;
+            message += `• Bouquet: ${selectedBouquet.sheets} lembar - Rp ${selectedBouquet.price.toLocaleString('id-ID')}\n`;
+            message += `• Pecahan: ${selectedDenomination.label}\n`;
+            message += `• Jumlah: ${quantity} lembar\n`;
+            message += `• Total uang: Rp ${(selectedDenomination.value * quantity).toLocaleString('id-ID')}\n\n`;
+
+            if (selectedAddons.length > 0) {
+                message += `🎁 *Add-ons:*\n`;
+                selectedAddons.forEach(addon => {
+                    message += `• ${addon.name} - Rp ${addon.price.toLocaleString('id-ID')}\n`;
+                });
+                message += `\n`;
+            }
+
+            const total = selectedBouquet.price + (selectedDenomination.value * quantity) + 
+                         selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+            
+            message += `💰 *Total Pembayaran: Rp ${total.toLocaleString('id-ID')}*\n\n`;
+            message += `📍 Dari: floristme.id\n`;
+            message += `🕐 Jam operasional:\n`;
+            message += `• Weekday: 08.00-17.00\n`;
+            message += `• Weekend: 09.00-16.00\n\n`;
+            message += `Terima kasih! 🌸🌸`;
+
+            return encodeURIComponent(message);
+        }
+
+        function openWhatsApp() {
+            const message = generateWhatsAppMessage();
+            const phoneNumber = '085714432441';
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        document.getElementById('checkoutBtn').addEventListener('click', openWhatsApp);
+
+        // Initialize on page load
+        init();
+    </script>
+</body>
+</html>
