@@ -687,6 +687,28 @@
                     <i class="fab fa-github"></i> Export ke GitHub
                 </button>
             </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                <button onclick="generatePermanentCode()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                    <i class="fas fa-code"></i> Generate Code
+                </button>
+                
+                <button onclick="clearAllImages()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; font-size: 0.9rem;">
+                <strong><i class="fas fa-exclamation-triangle"></i> Agar Foto Permanent:</strong>
+                <ol style="margin-top: 10px; padding-left: 20px;">
+                    <li>Upload foto dan assign ke paket</li>
+                    <li>Klik <strong>"Generate Code"</strong></li>
+                    <li>Copy kode yang muncul</li>
+                    <li>Edit file <code>index.html</code> di repository</li>
+                    <li>Replace bagian <code>bouquetPrices = {</code> dengan kode baru</li>
+                    <li>Commit & push ke GitHub</li>
+                </ol>
+            </div>
             
             <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; font-size: 0.9rem;">
                 <strong><i class="fas fa-info-circle"></i> Cara Upload ke GitHub:</strong>
@@ -1249,34 +1271,192 @@ Atau bisa juga menggunakan layanan hosting gambar gratis seperti:
             img.src = imageUrl;
         }
 
+        function generatePermanentCode() {
+            if (Object.values(bouquetPrices).every(item => !item.image)) {
+                alert('Belum ada foto yang diupload! Upload foto terlebih dahulu.');
+                return;
+            }
+
+            const code = generateImageConfigCode();
+            
+            // Create modal to show the code
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.8); z-index: 3000; display: flex;
+                align-items: center; justify-content: center; padding: 20px;
+            `;
+            
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: white; border-radius: 15px; padding: 30px;
+                max-width: 800px; max-height: 80vh; overflow-y: auto;
+                position: relative;
+            `;
+            
+            content.innerHTML = `
+                <h3 style="margin-bottom: 20px; color: #333;">
+                    <i class="fas fa-code"></i> Kode untuk File index.html
+                </h3>
+                <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">
+                    Copy kode di bawah ini dan replace bagian <code>const bouquetPrices = {</code> di file index.html:
+                </p>
+                <textarea readonly style="
+                    width: 100%; height: 300px; font-family: monospace;
+                    border: 2px solid #e2e8f0; border-radius: 8px; padding: 15px;
+                    font-size: 0.85rem; resize: vertical;
+                " id="generatedCode">${code}</textarea>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button onclick="copyCodeToClipboard()" style="
+                        background: #48bb78; color: white; border: none;
+                        padding: 10px 20px; border-radius: 8px; cursor: pointer;
+                        flex: 1;
+                    ">
+                        <i class="fas fa-copy"></i> Copy Code
+                    </button>
+                    <button onclick="closeCodeModal()" style="
+                        background: #6b7280; color: white; border: none;
+                        padding: 10px 20px; border-radius: 8px; cursor: pointer;
+                    ">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            `;
+            
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+            window.codeModal = modal;
+            
+            // Select all text
+            setTimeout(() => {
+                document.getElementById('generatedCode').select();
+            }, 100);
+        }
+
+        function copyCodeToClipboard() {
+            const textarea = document.getElementById('generatedCode');
+            textarea.select();
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(textarea.value)
+                    .then(() => alert('✅ Kode berhasil di-copy ke clipboard!'))
+                    .catch(() => {
+                        document.execCommand('copy');
+                        alert('✅ Kode berhasil di-copy!');
+                    });
+            } else {
+                document.execCommand('copy');
+                alert('✅ Kode berhasil di-copy!');
+            }
+        }
+
+        function closeCodeModal() {
+            if (window.codeModal) {
+                document.body.removeChild(window.codeModal);
+                window.codeModal = null;
+            }
+        }
+
+        function clearAllImages() {
+            if (!confirm('Hapus semua foto? Aksi ini tidak bisa di-undo!')) {
+                return;
+            }
+
+            Object.keys(bouquetPrices).forEach(sheets => {
+                bouquetPrices[sheets].image = null;
+                updateBouquetCard(sheets);
+            });
+
+            try {
+                localStorage.removeItem('bouquetImages');
+            } catch (error) {
+                console.log('LocalStorage not available');
+            }
+
+            alert('✅ Semua foto berhasil dihapus!');
+        }
+
         function saveToLocalStorage() {
             try {
-                // Note: In Claude.ai artifacts, localStorage is not supported
-                // This is a placeholder for when the code is used elsewhere
+                // Save image URLs to localStorage for persistence
                 const imageData = {};
                 Object.keys(bouquetPrices).forEach(sheets => {
                     if (bouquetPrices[sheets].image) {
                         imageData[sheets] = bouquetPrices[sheets].image;
                     }
                 });
-                // localStorage.setItem('bouquetImages', JSON.stringify(imageData));
+                localStorage.setItem('bouquetImages', JSON.stringify(imageData));
+                console.log('Images saved to localStorage:', imageData);
             } catch (error) {
-                console.log('LocalStorage not available in this environment');
+                console.log('LocalStorage not available:', error);
+                // Fallback: show manual instructions
+                showPermanentSaveInstructions();
             }
         }
 
         function loadFromLocalStorage() {
             try {
-                // const saved = localStorage.getItem('bouquetImages');
-                // if (saved) {
-                //     const imageData = JSON.parse(saved);
-                //     Object.keys(imageData).forEach(sheets => {
-                //         bouquetPrices[sheets].image = imageData[sheets];
-                //     });
-                // }
+                const saved = localStorage.getItem('bouquetImages');
+                if (saved) {
+                    const imageData = JSON.parse(saved);
+                    Object.keys(imageData).forEach(sheets => {
+                        if (imageData[sheets]) {
+                            bouquetPrices[sheets].image = imageData[sheets];
+                        }
+                    });
+                    console.log('Images loaded from localStorage:', imageData);
+                    
+                    // Update all cards after loading
+                    setTimeout(() => {
+                        Object.keys(imageData).forEach(sheets => {
+                            updateBouquetCard(sheets);
+                        });
+                    }, 100);
+                }
             } catch (error) {
-                console.log('LocalStorage not available in this environment');
+                console.log('LocalStorage not available:', error);
             }
+        }
+
+        function showPermanentSaveInstructions() {
+            const instructions = `
+🔄 CARA SAVE PERMANENT (Karena LocalStorage terbatas):
+
+1. SIMPAN KODE INI ke file .txt:
+${generateImageConfigCode()}
+
+2. EDIT file index.html:
+   - Cari bagian "bouquetPrices = {"
+   - Replace dengan kode di atas
+
+3. COMMIT & PUSH ke GitHub:
+   git add index.html
+   git commit -m "Update bouquet images"
+   git push origin main
+
+4. Foto akan permanent di website!
+            `;
+            
+            // Copy to clipboard if possible
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(generateImageConfigCode())
+                    .then(() => alert(instructions + '\n\n✅ Kode sudah di-copy ke clipboard!'))
+                    .catch(() => alert(instructions));
+            } else {
+                alert(instructions);
+            }
+        }
+
+        function generateImageConfigCode() {
+            const imageData = {};
+            Object.keys(bouquetPrices).forEach(sheets => {
+                imageData[sheets] = {
+                    price: bouquetPrices[sheets].price,
+                    image: bouquetPrices[sheets].image
+                };
+            });
+            
+            return `const bouquetPrices = ${JSON.stringify(imageData, null, 4)};`;
         }
 
         function validateQuantity() {
@@ -1393,7 +1573,7 @@ Atau bisa juga menggunakan layanan hosting gambar gratis seperti:
             message += `🕐 Jam operasional:\n`;
             message += `• Weekday: 08.00-17.00\n`;
             message += `• Weekend: 09.00-16.00\n\n`;
-            message += `Terima kasih! 🌸🌸`;
+            message += `Terima kasih! 🌸`;
 
             return encodeURIComponent(message);
         }
