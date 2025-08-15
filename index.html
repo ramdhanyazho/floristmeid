@@ -1635,8 +1635,15 @@ function isMobileDevice() {
     return /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
 }
 
+function openWhatsApp() {
+    const message = generateWhatsAppMessage();
 
-    let phoneNumber = '085814432441'; // bisa format lokal atau internasional
+    if (!message) {
+        alert("Silakan lengkapi pesanan dulu sebelum mengirim WhatsApp.");
+        return;
+    }
+
+    let phoneNumber = '085814432441'; // Boleh format lokal atau internasional
     phoneNumber = formatPhoneNumber(phoneNumber);
 
     const baseUrl = isMobileDevice()
@@ -1649,15 +1656,6 @@ function isMobileDevice() {
 
 document.getElementById('checkoutBtn').addEventListener('click', openWhatsApp);
 
-
-        function openWhatsApp() {
-            const message = generateWhatsAppMessage();
-            const phoneNumber = '6285814432441'; // format internasional
-            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-            window.open(whatsappUrl, '_blank');
-        }
-        
-        document.getElementById('checkoutBtn').addEventListener('click', openWhatsApp);
 
         // Initialize on page load
         init();
