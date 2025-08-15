@@ -1595,25 +1595,32 @@ ${generateImageConfigCode()}
                 return '';
             }
 
-            let message = `*PEMESANAN MONEY BOUQUET*\n\n`;
+        let message = `*PEMESANAN MONEY BOUQUET*\n\n`;
             message += `📦 *Detail Pesanan:*\n`;
             message += `• Bouquet: ${selectedBouquet.sheets} lembar - Rp ${selectedBouquet.price.toLocaleString('id-ID')}\n`;
             message += `• Pecahan: ${selectedDenomination.label}\n`;
             message += `• Jumlah: ${quantity} lembar\n`;
             message += `• Total uang: Rp ${(selectedDenomination.value * quantity).toLocaleString('id-ID')}\n\n`;
 
-            if (selectedAddons.length > 0) {
-                message += `🎁 *Add-ons:*\n`;
-                selectedAddons.forEach(addon => {
-                    message += `• ${addon.name} - Rp ${addon.price.toLocaleString('id-ID')}\n`;
-                });
-                message += `\n`;
-            }
+        if (selectedAddons.length > 0) {
+            message += `🎁 *Add-ons:*\n`;
+            selectedAddons.forEach(addon => {
+            message += `• ${addon.name} - Rp ${addon.price.toLocaleString('id-ID')}\n`;
+        });
+            message += `\n`;
+        }
 
-            const total = selectedBouquet.price + (selectedDenomination.value * quantity) + 
-                         selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
-            
+const total = selectedBouquet.price + (selectedDenomination.value * quantity) + 
+             selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+
             message += `💰 *Total Pembayaran: Rp ${total.toLocaleString('id-ID')}*\n\n`;
+
+// 🔹 Tambahan: Info transfer bank
+            message += `🏦 *Pembayaran via Transfer Bank:*\n`;
+            message += `• Bank: Mandiri\n`;
+            message += `• No. Rekening: 1820012966255\n`;
+            message += `• Atas Nama: Dini Amalia Ramdani\n\n`;
+
             message += `📍 Dari: floristme.id\n`;
             message += `🕐 Jam operasional:\n`;
             message += `• Weekday: 08.00-17.00\n`;
