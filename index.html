@@ -1623,13 +1623,14 @@ ${generateImageConfigCode()}
             return encodeURIComponent(message);
         }
 
+
         function openWhatsApp() {
             const message = generateWhatsAppMessage();
-            const phoneNumber = '085814432441';
+            const phoneNumber = '6285814432441'; // format internasional
             const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
             window.open(whatsappUrl, '_blank');
         }
-
+        
         document.getElementById('checkoutBtn').addEventListener('click', openWhatsApp);
 
         // Initialize on page load
