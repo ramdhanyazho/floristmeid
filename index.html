@@ -1622,6 +1622,32 @@ ${generateImageConfigCode()}
 
             return encodeURIComponent(message);
         }
+        
+        function formatPhoneNumber(number) {
+    number = number.replace(/\D/g, '');
+    if (number.startsWith('0')) {
+        number = '62' + number.slice(1);
+    }
+    return number;
+}
+
+function isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+}
+
+
+    let phoneNumber = '085814432441'; // bisa format lokal atau internasional
+    phoneNumber = formatPhoneNumber(phoneNumber);
+
+    const baseUrl = isMobileDevice()
+        ? 'https://api.whatsapp.com/send'  // Mobile
+        : 'https://web.whatsapp.com/send'; // Desktop
+
+    const whatsappUrl = `${baseUrl}?phone=${phoneNumber}&text=${message}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+document.getElementById('checkoutBtn').addEventListener('click', openWhatsApp);
 
 
         function openWhatsApp() {
